@@ -67,11 +67,24 @@ namespace MCSD_ASP_NET_CORE_PROJECT
             //    });
             
             //app.Run(MerhabaDunyaYaz);
-            app.Run(async context=>
+
+            //app.Run(async context=>
+            //{
+            //    List<string> sehirler = new () {"Istanbul", "Izmir", "Bursa"};
+            //    context.Response.WriteAsJsonAsync(sehirler);
+            //});
+
+            //Hata firlatma
+            //app.Run(context =>
+            //{
+            //    throw new Exception("Hata olustu.");
+            //});
+
+            app.UseWelcomePage();
+            if (env.IsDevelopment())
             {
-                List<string> sehirler = new () {"Istanbul", "Izmir", "Bursa"};
-                context.Response.WriteAsJsonAsync(sehirler);
-            });
+                app.UseDeveloperExceptionPage();
+            }
         }
 
         Task MerhabaDunyaYaz(HttpContext context)
