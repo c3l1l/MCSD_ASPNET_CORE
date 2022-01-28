@@ -65,7 +65,7 @@ namespace MCSD_ASP_NET_CORE_PROJECT
             //        context.Response.StatusCode = 404; 
             //        await context.Response.WriteAsync("Merhaba Dunya !");
             //    });
-            
+
             //app.Run(MerhabaDunyaYaz);
 
             //app.Run(async context=>
@@ -80,17 +80,78 @@ namespace MCSD_ASP_NET_CORE_PROJECT
             //    throw new Exception("Hata olustu.");
             //});
 
-            app.UseWelcomePage();
-            if (env.IsDevelopment())
+            //app.UseWelcomePage();
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
+
+            //app.UseStaticFiles(); //Static sayflara erismemizi saglayan MiddleWare budur.
+            // app.UseDirectoryBrowser();
+            //app.Run(async context =>
+            //{
+            //    await context.Response.WriteAsync("Merhaba Dünya!");
+            //});
+
+            //app.Run(async context =>
+            //{
+            //    await context.Response.WriteAsync("MiddleWare#1");
+            //});
+            //Bu ara yazilim hic bir zaman calismaz....
+            //app.Run(async context =>
+            //{
+            //    await context.Response.WriteAsync("MiddleWare#2");
+            //});
+
+            //app.Use(async (context, next) =>
+            //{
+            //    context.Response.ContentType = "text/html;charset=utf-8";
+            //    await context.Response.WriteAsync("MiddleWare#1 Merhaba Düüünyyaýý");
+            //    await next();
+            //});
+            //app.Use(async (context, next) =>
+            //{
+            //    await context.Response.WriteAsync("<br/>MiddleWare#2");
+            //});
+
+            //app.Map("/HatBir", BirinciHat);
+            //app.Map("/HatIki", IkinciHat);
+            //app.Run(async context =>
+            //{
+            //    await context.Response.WriteAsync($"Talep edilen yol {context.Request.Path}.");
+            //});
+            app.Map("/Musteri", musteriApp =>
             {
-                app.UseDeveloperExceptionPage();
-            }
+                musteriApp.Map("/Kaydet", musteriKaydeApp =>
+                {
+                    musteriKaydeApp.Run(async context =>
+                    {
+                        await context.Response.WriteAsync($"Musteri.Kaydet");
+                    });
+                });
+            });
         }
 
         Task MerhabaDunyaYaz(HttpContext context)
         {
             return context.Response.WriteAsync("Merhaba Dunya !");
 
+        }
+
+        void BirinciHat(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                await context.Response.WriteAsync("1. hatcalisti !");
+            });
+        }
+
+        void IkinciHat(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                await context.Response.WriteAsync("2. hatcalisti !");
+            });
         }
     }
     public interface IKullanici
