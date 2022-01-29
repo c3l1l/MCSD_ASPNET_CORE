@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MCSD_ASP_NET_CORE_PROJECT.Extensions;
+using MCSD_ASP_NET_CORE_PROJECT.MiddleWare;
 using MCSD_ASPNET_CORE;
 using Microsoft.AspNetCore.Http;
 
@@ -120,16 +122,70 @@ namespace MCSD_ASP_NET_CORE_PROJECT
             //{
             //    await context.Response.WriteAsync($"Talep edilen yol {context.Request.Path}.");
             //});
-            app.Map("/Musteri", musteriApp =>
+            //app.Map("/Musteri", musteriApp =>
+            //{
+            //    musteriApp.Map("/Kaydet", musteriKaydeApp =>
+            //    {
+            //        musteriKaydeApp.Run(async context =>
+            //        {
+            //            await context.Response.WriteAsync($"Musteri.Kaydet");
+            //        });
+            //    });
+            //});
+
+            //app.MapWhen(context => context.Request.Query.ContainsKey("id"), ParametreGonderildi);
+
+            //app.UseMiddleware<YazarEkleMiddleware>(); //Middleware olarak olusturulan siniftan middleware erisimi icin kullanildi.
+            app.UseYazarEkleMiddleware(); //Burada olusturulan middleWare extension metot olarak eklendi ve diledigimiz yerde kullanilabilir.
+
+
+            app.UseStaticFiles();
+            app.Use(async (context, next) =>
             {
-                musteriApp.Map("/Kaydet", musteriKaydeApp =>
+                context.Response.ContentType = "text/html;charset=utf-8";
+                await next();
+            });
+            //app.Use(async (context, next) =>
+            //{
+            //    await next();
+            //    await context.Response.WriteAsync($"Durum kodu:{context.Response.StatusCode}");
+            //    await context.Response.WriteAsync($"Talep edilen yol:{context.Request.Path}");
+
+            //});
+            //app.Run(async context=>
+            //{
+            //  await  context.Response.WriteAsync("Anasayfaya Hosgeldiniz.");
+            //});
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+                string yol = context.Request.Path.Value;
+                await context.Response.WriteAsync($"Talep edilen yol:{yol}");
+                await context.Response.WriteAsync($"<br/>HTTP Status Code:{context.Response.StatusCode.ToString()}");
+             
+
+
+            });
+
+            app.Map("/Hakkimizda", appHakkimizda =>
+            {appHakkimizda.Run(async context =>
                 {
-                    musteriKaydeApp.Run(async context =>
-                    {
-                        await context.Response.WriteAsync($"Musteri.Kaydet");
-                    });
+                    context.Response.WriteAsync("Hakkimizda sayfasina hosgeldiniz.");
+                });
+
+            });
+          
+            app.MapWhen(context => context.Request.Path == "/", appAnasayfa =>
+            {
+                appAnasayfa.Run(async context =>
+                {
+                    context.Response.Redirect("/html/anasayfa.html");
+                    await Task.FromResult(0);
                 });
             });
+
+
         }
 
         Task MerhabaDunyaYaz(HttpContext context)
@@ -152,6 +208,15 @@ namespace MCSD_ASP_NET_CORE_PROJECT
             {
                 await context.Response.WriteAsync("2. hatcalisti !");
             });
+        }
+        void ParametreGonderildi(IApplicationBuilder app)
+        {
+            app.Run(
+                async context =>
+                {
+                    var id = context.Request.Query["Id"];
+                    await context.Response.WriteAsync($"Parametre Gönderildi. Deðeri: {id}");
+                });
         }
     }
     public interface IKullanici
